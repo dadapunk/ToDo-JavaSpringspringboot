@@ -1,6 +1,6 @@
 package com.dadalab.todojavaspring.repositories;
 
-import com.dadalab.todojavaspring.Todo;
+import com.dadalab.todojavaspring.models.Todo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

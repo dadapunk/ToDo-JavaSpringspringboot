@@ -1,7 +1,12 @@
-package com.dadalab.todojavaspring;
+package com.dadalab.todojavaspring.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Data
+@NoArgsConstructor
 public class Todo {
 
     @Id

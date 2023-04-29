@@ -1,6 +1,6 @@
-package com.dadalab.todojavaspring.controller;
+package com.dadalab.todojavaspring.controllers;
 
-import com.dadalab.todojavaspring.User;
+import com.dadalab.todojavaspring.models.User;
 import com.dadalab.todojavaspring.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
