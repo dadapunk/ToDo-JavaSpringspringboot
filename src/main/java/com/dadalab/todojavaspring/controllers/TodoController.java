@@ -19,9 +19,11 @@ public class TodoController {
     private TodoService todoService;
 
     @GetMapping("/all")
-    public List<Todo> getAllTodos() {
-        return todoService.getAllTodos();
+    public List<Todo> getAllTodos(@RequestParam(required = false) String title,
+                                  @RequestParam(required = false) String username) {
+        return todoService.getTodosByTitleAndUsername(title, username);
     }
+
 
     @GetMapping("/{userId}")
     public List<Todo> getTodosByUserId(@PathVariable Long userId) {

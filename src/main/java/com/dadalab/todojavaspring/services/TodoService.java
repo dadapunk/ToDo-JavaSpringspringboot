@@ -53,4 +53,8 @@ public class TodoService {
     }
 
 
+    public List<Todo> getTodosByTitleAndUsername(String title, String username) {
+        return todoRepository.findByTitleContainingAndUserUsernameContaining(title, username);
+    }
+
 }

@@ -10,4 +10,5 @@ import java.util.List;
 public interface TodoRepository extends JpaRepository<Todo, Long> {
     List<Todo> findByUserId(Long userId);
 
+    List<Todo> findByTitleContainingAndUserUsernameContaining(String title, String username);
 }
