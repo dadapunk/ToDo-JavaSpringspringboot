@@ -18,9 +18,17 @@ public class TodoController {
     @Autowired
     private TodoService todoService;
 
+    @GetMapping("/all")
+    public List<Todo> getAllTodos() {
+        return todoService.getAllTodos();
+    }
+
     @GetMapping("/{userId}")
     public List<Todo> getTodosByUserId(@PathVariable Long userId) {
-        return todoRepository.findByUserId(userId);
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
+        }
+        return todoService.findByUserId(userId);
     }
     @PostMapping("/new")
     @ResponseStatus(HttpStatus.CREATED)

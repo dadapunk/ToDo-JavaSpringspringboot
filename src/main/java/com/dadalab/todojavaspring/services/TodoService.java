@@ -9,11 +9,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 
 @Service
 public class TodoService {
     @Autowired
     TodoRepository todoRepository;
+    public List<Todo> getAllTodos() {
+        return todoRepository.findAll();
+    }
+
+    public List<Todo> findByUserId(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
+        }
+
+        return todoRepository.findByUserId(userId);
+    }
     public Todo saveTodo(Todo todo) {
         if (todo.getTitle() == null || todo.getTitle().isEmpty()) {
             throw new IllegalArgumentException("The field 'title' can not be empty");
@@ -38,6 +51,6 @@ public class TodoService {
             throw new EntityNotFoundException("Todo not found with id: " + id);
         }
     }
-    // List by UserId
+
 
 }
