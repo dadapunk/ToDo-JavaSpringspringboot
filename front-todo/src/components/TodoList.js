@@ -8,6 +8,7 @@ function TodoList() {
     useEffect(() => {
         async function fetchTodos() {
             const response = await fetch('http://localhost:8080/todos/all');
+
             const data = await response.json();
             setTodos(data);
         }
@@ -30,7 +31,7 @@ function TodoList() {
                 {todos.map(todo => (
                     <tr key={todo.id}>
                         <td>{todo.title}</td>
-                        <td>{todo.username}</td>
+                        <td>{todo.user.name}</td>
                         <td>{todo.country}</td>
                         <td>{todo.completed ? 'Sí' : 'No'}</td>
                     </tr>
