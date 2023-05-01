@@ -10,6 +10,8 @@ function TodoList() {
     const [pageSize, setPageSize] = useState(10);
     const [isLoading, setIsLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(0);
+    const [sortDirection, setSortDirection] = useState('asc');
+    const [sortColumn, setSortColumn] = useState('title');
 
     function handleTitleFilterChange(event) {
         setTitleFilter(event.target.value);
@@ -28,7 +30,6 @@ function TodoList() {
         setIsLoading(false);
     }
 
-
     useEffect(() => {
         fetchTodos();
     }, []);
@@ -41,19 +42,69 @@ function TodoList() {
         setCurrentPage(pageNumber);
     }
 
+    function handleSort(columnName) {
+        if (columnName === sortColumn) {
+            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortDirection('asc');
+            setSortColumn(columnName);
+        }
+    }
+
+    function sortTodos() {
+        const sortedTodos = todos.sort((a, b) => {
+            const valueA = a[sortColumn]?.toUpperCase() || '';
+            const valueB = b[sortColumn]?.toUpperCase() || '';
+            if (valueA < valueB) {
+                return sortDirection === 'asc' ? -1 : 1;
+            }
+            if (valueA > valueB) {
+                return sortDirection === 'asc' ? 1 : -1;
+            }
+            return 0;
+        });
+        return sortedTodos;
+    }
+
+    const sortedTodos = sortTodos();
+
     return (
         <div>
             <table className="table">
                 <thead>
                 <tr>
-                    <th>Título</th>
-                    <th>Username</th>
-                    <th>País</th>
-                    <th>Completado</th>
+                    <th onClick={() => handleSort('title')}>
+                        Título{' '}
+                        {sortColumn === 'title' &&
+                            sortDirection === 'asc' && <span>&#8593;</span>}
+                        {sortColumn === 'title' &&
+                            sortDirection === 'desc' && <span>&#8595;</span>}
+                    </th>
+                    <th onClick={() => handleSort('user.name')}>
+                        Username{' '}
+                        {sortColumn === 'user.name' &&
+                            sortDirection === 'asc' && <span>&#8593;</span>}
+                        {sortColumn === 'user.name' &&
+                            sortDirection === 'desc' && <span>&#8595;</span>}
+                    </th>
+                    <th onClick={() => handleSort('user.address.country')}>
+                        País{' '}
+                        {sortColumn === 'user.address.country' &&
+                            sortDirection === 'asc' && <span>&#8593;</span>}
+                        {sortColumn === 'user.address.country' &&
+                            sortDirection === 'desc' && <span>&#8595;</span>}
+                    </th>
+                    <th onClick={() => handleSort('completed')}>
+                        Completado{' '}
+                        {sortColumn === 'completed' &&
+                            sortDirection === 'asc' && <span>&#8593;</span>}
+                        {sortColumn === 'completed' &&
+                            sortDirection === 'desc' && <span>&#8595;</span>}
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
-                {todos.map((todo) => (
+                {sortedTodos.map((todo) => (
                     <tr key={todo.id}>
                         <td>{todo.title}</td>
                         <td>{todo.user.name}</td>
@@ -65,22 +116,46 @@ function TodoList() {
             </table>
             <div>
                 <label htmlFor="title-filter">Filtrar por título:</label>
-                <input type="text" id="title-filter" value={titleFilter} onChange={handleTitleFilterChange} />
+                <input
+                    type="text"
+                    id="title-filter"
+                    value={titleFilter}
+                    onChange={handleTitleFilterChange}
+                />
             </div>
             <div>
                 <label htmlFor="username-filter">Filtrar por username:</label>
-                <input type="text" id="username-filter" value={usernameFilter} onChange={handleUsernameFilterChange} />
+                <input
+                    type="text"
+                    id="username-filter"
+                    value={usernameFilter}
+                    onChange={handleUsernameFilterChange}
+                />
             </div>
             <button onClick={handleSearch}>Buscar</button>
             <div className="pagination">
-                <button disabled={currentPage === 1} onClick={() => handlePageClick(currentPage - 1)}>Anterior</button>
+                <button disabled={currentPage === 1} onClick={() => handlePageClick(currentPage - 1)}>
+                    Anterior
+                </button>
                 {Array.from({ length: totalPages }, (_, i) => (
-                    <button key={i + 1} className={currentPage === i + 1 ? 'active' : ''} onClick={() => handlePageClick(i + 1)}>{i + 1}</button>
+                    <button
+                        key={i + 1}
+                        className={currentPage === i + 1 ? 'active' : ''}
+                        onClick={() => handlePageClick(i + 1)}
+                    >
+                        {i + 1}
+                    </button>
                 ))}
-                <button disabled={currentPage === totalPages} onClick={() => handlePageClick(currentPage + 1)}>Siguiente</button>
+                <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageClick(currentPage + 1)}
+                >
+                    Siguiente
+                </button>
             </div>
         </div>
     );
+
 }
 
 export default TodoList;
