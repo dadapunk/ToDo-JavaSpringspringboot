@@ -5,6 +5,9 @@ import com.dadalab.todojavaspring.models.Todo;
 import com.dadalab.todojavaspring.repositories.TodoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -53,8 +56,19 @@ public class TodoService {
     }
 
 
-    public List<Todo> getTodosByTitleAndUsername(String title, String username) {
-        return todoRepository.findByTitleContainingAndUserUsernameContaining(title, username);
+    public Page<Todo> getTodosByTitleAndUsername(int pageNumber, int pageSize, String title, String username) {
+        Pageable paging = PageRequest.of(pageNumber, pageSize);
+
+        if (title != null && username != null) {
+            return todoRepository.findByTitleContainingIgnoreCaseAndUserUsernameContainingIgnoreCase(title, username, paging);
+        } else if (title != null) {
+            return todoRepository.findByTitleContaining(title, paging);
+        } else if (username != null) {
+            return todoRepository.findByUserUsernameContaining(username, paging);
+        } else {
+            return todoRepository.findAll(paging);
+        }
     }
+
 
 }

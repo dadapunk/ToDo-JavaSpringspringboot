@@ -5,6 +5,7 @@ import com.dadalab.todojavaspring.models.Todo;
 import com.dadalab.todojavaspring.repositories.TodoRepository;
 import com.dadalab.todojavaspring.services.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,10 +20,13 @@ public class TodoController {
     private TodoService todoService;
 
     @GetMapping("/all")
-    public List<Todo> getAllTodos(@RequestParam(required = false) String title,
+    public Page<Todo> getAllTodos(@RequestParam(defaultValue = "0") int pageNumber,
+                                  @RequestParam(defaultValue = "10") int pageSize,
+                                  @RequestParam(required = false) String title,
                                   @RequestParam(required = false) String username) {
-        return todoService.getTodosByTitleAndUsername(title, username);
+        return todoService.getTodosByTitleAndUsername(pageNumber, pageSize, title, username);
     }
+
 
 
     @GetMapping("/{userId}")
