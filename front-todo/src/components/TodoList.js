@@ -1,71 +1,168 @@
-import React, { useState } from "react";
-import TodoList from "./TodoList";
+import React, { useState, useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Link } from 'react-router-dom';
 
-function CreateTodoForm() {
-    const [user, setUser] = useState("");
-    const [title, setTitle] = useState("");
-    const [completed, setCompleted] = useState(false);
+import CreateTodoForm from "./CreateTodoForm";
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
 
-        const requestOptions = {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                title: title,
-                completed: completed,
-                user: {
-                    id: user,
-                },
-            }),
-        };
+function TodoList() {
+    const [todos, setTodos] = useState([]);
+    const [titleFilter, setTitleFilter] = useState('');
+    const [usernameFilter, setUsernameFilter] = useState('');
+    const [currentPage, setCurrentPage] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
+    const [isLoading, setIsLoading] = useState(true);
+    const [totalPages, setTotalPages] = useState(0);
+    const [sortDirection, setSortDirection] = useState('asc');
+    const [sortColumn, setSortColumn] = useState('title');
 
-        fetch("http://localhost:8080/todos/new", requestOptions)
-            .then((response) => response.json())
-            .then((data) => console.log(data))
-            .catch((error) => console.log(error));
+    function handleTitleFilterChange(event) {
+        setTitleFilter(event.target.value);
+    }
 
-        setUser("");
-        setTitle("");
-        setCompleted(false);
-    };
+    function handleUsernameFilterChange(event) {
+        setUsernameFilter(event.target.value);
+    }
+
+    async function fetchTodos() {
+        const response = await fetch(`http://localhost:8080/todos/all?pageNumber=${currentPage}&pageSize=${pageSize}&title=${titleFilter}&username=${usernameFilter}`);
+        const responseData = await response.json();
+        setTodos(responseData.content);
+        setTotalPages(responseData.totalPages);
+        setCurrentPage(responseData.number);
+        setIsLoading(false);
+    }
+
+    useEffect(() => {
+        fetchTodos();
+    }, []);
+
+    function handleSearch() {
+        fetchTodos();
+    }
+
+    function handlePageClick(pageNumber) {
+        setCurrentPage(pageNumber);
+    }
+
+    function handleSort(columnName) {
+        if (columnName === sortColumn) {
+            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortDirection('asc');
+            setSortColumn(columnName);
+        }
+    }
+
+    function sortTodos() {
+        const sortedTodos = todos.sort((a, b) => {
+            const valueA = a[sortColumn]?.toUpperCase() || '';
+            const valueB = b[sortColumn]?.toUpperCase() || '';
+            if (valueA < valueB) {
+                return sortDirection === 'asc' ? -1 : 1;
+            }
+            if (valueA > valueB) {
+                return sortDirection === 'asc' ? 1 : -1;
+            }
+            return 0;
+        });
+        return sortedTodos;
+    }
+
+    const sortedTodos = sortTodos();
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label>
-                User:
-                <select value={user} onChange={(e) => setUser(e.target.value)}>
-                    <option value="">Select a user</option>
-                    <option value="1">John</option>
-                    <option value="2">Jane</option>
-                    <option value="3">Bob</option>
-                </select>
-            </label>
-            <br />
-            <label>
-                Title:
+        <div>
+            <table className="table">
+                <thead>
+                <tr>
+                    <th onClick={() => handleSort('title')}>
+                        Título{' '}
+                        {sortColumn === 'title' &&
+                            sortDirection === 'asc' && <span>&#8593;</span>}
+                        {sortColumn === 'title' &&
+                            sortDirection === 'desc' && <span>&#8595;</span>}
+                    </th>
+                    <th onClick={() => handleSort('user.name')}>
+                        Username{' '}
+                        {sortColumn === 'user.name' &&
+                            sortDirection === 'asc' && <span>&#8593;</span>}
+                        {sortColumn === 'user.name' &&
+                            sortDirection === 'desc' && <span>&#8595;</span>}
+                    </th>
+                    <th onClick={() => handleSort('user.address.country')}>
+                        País{' '}
+                        {sortColumn === 'user.address.country' &&
+                            sortDirection === 'asc' && <span>&#8593;</span>}
+                        {sortColumn === 'user.address.country' &&
+                            sortDirection === 'desc' && <span>&#8595;</span>}
+                    </th>
+                    <th onClick={() => handleSort('completed')}>
+                        Completado{' '}
+                        {sortColumn === 'completed' &&
+                            sortDirection === 'asc' && <span>&#8593;</span>}
+                        {sortColumn === 'completed' &&
+                            sortDirection === 'desc' && <span>&#8595;</span>}
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {sortedTodos.map((todo) => (
+                    <tr key={todo.id}>
+                        <td>{todo.title}</td>
+                        <td>{todo.user.name}</td>
+                        <td>{todo.user.address.country}</td>
+                        <td>{todo.completed ? 'Sí' : 'No'}</td>
+                        <td>
+                            <Link to={`/edit-todo/${todo.id}`}>Edit</Link>
+                        </td>
+
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+            <div>
+                <label htmlFor="title-filter">Filtrar por título:</label>
                 <input
                     type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    id="title-filter"
+                    value={titleFilter}
+                    onChange={handleTitleFilterChange}
                 />
-            </label>
-            <br />
-            <label>
-                Completed:
-                <select
-                    value={completed ? "completed" : "not-completed"}
-                    onChange={(e) => setCompleted(e.target.value === "completed")}
+            </div>
+            <div>
+                <label htmlFor="username-filter">Filtrar por username:</label>
+                <input
+                    type="text"
+                    id="username-filter"
+                    value={usernameFilter}
+                    onChange={handleUsernameFilterChange}
+                />
+            </div>
+            <button onClick={handleSearch}>Buscar</button>
+            <div className="pagination">
+                <button disabled={currentPage === 1} onClick={() => handlePageClick(currentPage - 1)}>
+                    Anterior
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => (
+                    <button
+                        key={i + 1}
+                        className={currentPage === i + 1 ? 'active' : ''}
+                        onClick={() => handlePageClick(i + 1)}
+                    >
+                        {i + 1}
+                    </button>
+                ))}
+                <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageClick(currentPage + 1)}
                 >
-                    <option value="not-completed">Not completed</option>
-                    <option value="completed">Completed</option>
-                </select>
-            </label>
-            <br />
-            <button type="submit">Create</button>
-        </form>
+                    Siguiente
+                </button>
+            </div>
+        </div>
     );
+
 }
 
-export default CreateTodoForm;
+export default TodoList;

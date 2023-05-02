@@ -28,8 +28,6 @@ public class TodoController {
         return todoService.getTodosByTitleAndUsername(pageNumber, pageSize, title, username);
     }
 
-
-
     @GetMapping("/{userId}")
     public List<Todo> getTodosByUserId(@PathVariable Long userId) {
         if (userId == null) {
@@ -37,6 +35,16 @@ public class TodoController {
         }
         return todoService.findByUserId(userId);
     }
+    @GetMapping("/id/{id}")
+    public ResponseEntity<Todo> getTodoById(@PathVariable Long id) {
+        Todo todo = todoService.getTodoById(id);
+        if (todo == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(todo);
+        }
+    }
+
     @PostMapping("/new")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Long> saveUser(@RequestBody Todo todo) {

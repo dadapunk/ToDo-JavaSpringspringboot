@@ -1,28 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 function CreateTodoForm() {
+    const { id } = useParams();
+    const navigate = useNavigate();
     const [user, setUser] = useState("");
     const [title, setTitle] = useState("");
     const [completed, setCompleted] = useState(false);
 
+    useEffect(() => {
+        fetch(`http://localhost:8080/todos/id/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                setUser(data.user.id);
+                setTitle(data.title);
+                setCompleted(data.completed);
+            })
+            .catch((error) => console.log(error));
+    }, [id]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        fetch("http://localhost:8080/todos/new", {
-            method: "POST",
+        fetch(`http://localhost:8080/todos/update/${id}`, {
+            method: "PUT",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 title: title,
                 completed: completed,
-                user: { id: user }
-            })
+                user: { id: user },
+            }),
         })
-            .then(response => response.json())
-            .then(data => console.log(data)) // Aquí puedes imprimir la respuesta en la consola
-            .catch(error => console.log(error));
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data); // Aquí puedes imprimir la respuesta en la consola
+                navigate("/");
+            })
+            .catch((error) => console.log(error));
     };
+
 
     return (
         <form onSubmit={handleSubmit}>
@@ -56,7 +74,7 @@ function CreateTodoForm() {
                 </select>
             </label>
             <br />
-            <button type="submit">Create</button>
+            <button type="submit">Update</button>
         </form>
     );
 }

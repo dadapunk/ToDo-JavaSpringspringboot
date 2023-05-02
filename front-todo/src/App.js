@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TodoList from './components/TodoList';
 import CreateTodoForm from './components/CreateTodoForm';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 function App() {
     const [todos, setTodos] = useState([]);
@@ -10,13 +11,16 @@ function App() {
     }, []);
 
     return (
-        <div className="container">
-            {/*<h1>Listado de TODOs</h1>
-            <TodoList todos={todos} />*/}
-            <h1>Create TODO</h1>
-            <CreateTodoForm />
-
-        </div>
+        <BrowserRouter basename="/">
+            <div className="container">
+                <h1>Listado de TODOs</h1>
+                <Routes>
+                    <Route path="/" element={<TodoList todos={todos} />} />
+                    <Route path="/new-todo" element={<CreateTodoForm />} />
+                    <Route path="/edit-todo/:id" element={<CreateTodoForm />} />
+                </Routes>
+            </div>
+        </BrowserRouter>
     );
 }
 

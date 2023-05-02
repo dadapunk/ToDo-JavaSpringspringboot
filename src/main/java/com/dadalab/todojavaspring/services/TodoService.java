@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -67,6 +68,16 @@ public class TodoService {
             return todoRepository.findByUserUsernameContaining(username, paging);
         } else {
             return todoRepository.findAll(paging);
+        }
+    }
+
+
+    public Todo getTodoById(Long id) {
+        Optional<Todo> optionalTodo = todoRepository.findById(id);
+        if (optionalTodo.isPresent()) {
+            return optionalTodo.get();
+        } else {
+            throw new EntityNotFoundException("No se encontró un TODO con el ID proporcionado: " + id);
         }
     }
 
