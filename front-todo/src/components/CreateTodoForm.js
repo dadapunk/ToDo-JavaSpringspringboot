@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import TodoList from "./TodoList";
 
 function CreateTodoForm() {
     const [user, setUser] = useState("");
@@ -9,26 +8,20 @@ function CreateTodoForm() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const requestOptions = {
+        fetch("http://localhost:8080/todos/new", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
                 title: title,
                 completed: completed,
-                user: {
-                    id: user,
-                },
-            }),
-        };
-
-        fetch("http://localhost:8080/todos/new", requestOptions)
-            .then((response) => response.json())
-            .then((data) => console.log(data))
-            .catch((error) => console.log(error));
-
-        setUser("");
-        setTitle("");
-        setCompleted(false);
+                user: { id: user }
+            })
+        })
+            .then(response => response.json())
+            .then(data => console.log(data)) // Aquí puedes imprimir la respuesta en la consola
+            .catch(error => console.log(error));
     };
 
     return (

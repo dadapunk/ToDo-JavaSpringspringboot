@@ -7,6 +7,7 @@ import com.dadalab.todojavaspring.services.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,9 +39,11 @@ public class TodoController {
     }
     @PostMapping("/new")
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveUser(@RequestBody Todo todo) {
-        todoService.saveTodo(todo);
+    public ResponseEntity<Long> saveUser(@RequestBody Todo todo) {
+        Todo savedTodo = todoService.saveTodo(todo);
+        return new ResponseEntity<>(savedTodo.getId(), HttpStatus.CREATED);
     }
+
 
     @PutMapping("/update/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
