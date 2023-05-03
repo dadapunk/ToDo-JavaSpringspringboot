@@ -22,7 +22,15 @@ function TodoList() {
     }
 
     async function fetchTodos() {
-        const response = await fetch(`http://localhost:8080/todos/all?pageNumber=${currentPage}&pageSize=${pageSize}&title=${titleFilter}&username=${usernameFilter}`);
+        const response = await fetch(`http://localhost:8080/todos/all?pageNumber=${currentPage}&pageSize=${pageSize}`);
+        const responseData = await response.json();
+        setTodos(responseData.content);
+        setTotalPages(responseData.totalPages);
+        setCurrentPage(responseData.number);
+        setIsLoading(false);
+    }
+    async function fetchFilterTodos() {
+        const response = await fetch(`http://localhost:8080/todos/filters?pageNumber=${currentPage}&pageSize=${pageSize}&title=${titleFilter}&username=${usernameFilter}`);
         const responseData = await response.json();
         setTodos(responseData.content);
         setTotalPages(responseData.totalPages);
@@ -34,7 +42,7 @@ function TodoList() {
         fetchTodos();
     }, []);
     function handleSearch() {
-        fetchTodos();
+        fetchFilterTodos();
     }
 
     function handlePageClick(pageNumber) {
@@ -90,9 +98,9 @@ function TodoList() {
                         {sortColumn === 'title' &&
                             sortDirection === 'desc' && <span>&#8595;</span>}
                     </th>
-                    <th onClick={() => handleSort('user.name')}>
+                    <th onClick={() => handleSort('user.username')}>
                         Username{' '}
-                        {sortColumn === 'user.name' &&
+                        {sortColumn === 'user.username' &&
                             sortDirection === 'asc' && <span>&#8593;</span>}
                         {sortColumn === 'user.name' &&
                             sortDirection === 'desc' && <span>&#8595;</span>}
@@ -117,7 +125,7 @@ function TodoList() {
                 {sortedTodos.map((todo) => (
                     <tr key={todo.id}>
                         <td>{todo.title}</td>
-                        <td>{todo.user.name}</td>
+                        <td>{todo.user.username}</td>
                         <td>{todo.user.address.country}</td>
                         <td>{todo.completed ? 'Sí' : 'No'}</td>
                         <td>

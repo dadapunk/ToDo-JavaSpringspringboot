@@ -23,6 +23,12 @@ public class TodoController {
 
     @GetMapping("/all")
     public Page<Todo> getAllTodos(@RequestParam(defaultValue = "0") int pageNumber,
+                                  @RequestParam(defaultValue = "10") int pageSize)
+                                   {
+        return todoService.getAllTodos(pageNumber, pageSize);
+    }
+    @GetMapping("/filters")
+    public Page<Todo> getFilterTodos(@RequestParam(defaultValue = "0") int pageNumber,
                                   @RequestParam(defaultValue = "10") int pageSize,
                                   @RequestParam(required = false) String title,
                                   @RequestParam(required = false) String username) {

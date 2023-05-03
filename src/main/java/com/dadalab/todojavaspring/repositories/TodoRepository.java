@@ -12,10 +12,10 @@ import java.util.List;
 public interface TodoRepository extends JpaRepository<Todo, Long> {
     List<Todo> findByUserId(Long userId);
 
-    Page<Todo> findByTitleContainingIgnoreCaseAndUserUsernameContainingIgnoreCase(
+    Page<Todo> findByTitleContainingIgnoreCaseAndUserUsername(
             String title, String username, Pageable pageable);
 
     Page<Todo> findByTitleContaining(String title, Pageable paging);
 
-    Page<Todo> findByUserUsernameContaining(String username, Pageable paging);
+    Page<Todo> findByUserUsername(String username, Pageable paging);
 }

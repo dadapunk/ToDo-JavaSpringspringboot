@@ -21,8 +21,10 @@ import java.util.Optional;
 public class TodoService {
     @Autowired
     TodoRepository todoRepository;
-    public List<Todo> getAllTodos() {
-        return todoRepository.findAll();
+    public Page<Todo> getAllTodos(int pageNumber, int pageSize) {
+        Pageable paging = PageRequest.of(pageNumber, pageSize);
+
+        return todoRepository.findAll(paging);
     }
 
     public List<Todo> findByUserId(Long userId) {
@@ -63,24 +65,23 @@ public class TodoService {
     public Page<Todo> getTodosByTitleAndUsername(int pageNumber, int pageSize, String title, String username) {
         Pageable paging = PageRequest.of(pageNumber, pageSize);
 
-        if (title != null && username != null) {
-            return todoRepository.findByTitleContainingIgnoreCaseAndUserUsernameContainingIgnoreCase(title, username, paging);
-        } else if (title != null) {
-            return todoRepository.findByTitleContaining(title, paging);
-        } else if (username != null) {
-            return todoRepository.findByUserUsernameContaining(username, paging);
-        } else {
-            return todoRepository.findAll(paging);
+            if (title != null && !title.isEmpty() && username != null && !username.isEmpty()) {
+                return todoRepository.findByTitleContainingIgnoreCaseAndUserUsername(title, username, paging);
+            } else if (title != null && !title.isEmpty()) {
+                return todoRepository.findByTitleContaining(title, paging);
+            } else if (username != null && !username.isEmpty()) {
+                return todoRepository.findByUserUsername(username, paging);
+            } else {
+                return todoRepository.findAll(paging);
+            }
         }
-    }
-
 
     public Todo getTodoById(Long id) {
         Optional<Todo> optionalTodo = todoRepository.findById(id);
         if (optionalTodo.isPresent()) {
             return optionalTodo.get();
         } else {
-            throw new EntityNotFoundException("No se encontró un TODO con el ID proporcionado: " + id);
+            throw new EntityNotFoundException("No TODO found with the provided ID: " + id);
         }
     }
 

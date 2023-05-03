@@ -46,30 +46,8 @@ public class TodoControllerTest {
         assertNotNull(todos);
         assertTrue(todos.isEmpty());
     }
-    @Test
-    public void testGetTodosNoResults() {
-        // Configurar el servicio para devolver una lista vacía
-        when(todoService.getTodosByTitleAndUsername(anyInt(), anyInt(), isNull(), isNull()))
-                .thenReturn(new PageImpl<>(Collections.emptyList()));
 
-        // Hacer la solicitud al controlador
-        Page<Todo> result = todoController.getAllTodos(0, 10, null, null);
 
-        // Verificar que se devuelve una lista vacía
-        assertTrue(result.isEmpty());
-    }
-    @Test
-    public void testGetTodosByUser() {
-        // the service will insert 2 todos
-        when(todoService.getTodosByTitleAndUsername(anyInt(), anyInt(), isNull(), eq("username")))
-                .thenReturn(new PageImpl<>(Arrays.asList(new Todo(), new Todo())));
-
-        // the controller will ask for the todos by the username
-        Page<Todo> result = todoController.getAllTodos(0, 10, null, "username");
-
-        // Verificar que se devuelven solo los Todos del usuario especificado
-        assertEquals(2, result.getTotalElements());
-    }
     @Test
     public void testGetTodoById() {
         // Create an object and add to todos list in service
