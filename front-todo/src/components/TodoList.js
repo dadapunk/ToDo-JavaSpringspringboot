@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Link} from 'react-router-dom';
 
 function TodoList() {
     const [todos, setTodos] = useState([]);
@@ -21,8 +20,11 @@ function TodoList() {
         setUsernameFilter(event.target.value);
     }
 
+
     async function fetchTodos() {
+
         const response = await fetch(`http://localhost:8080/todos/all?pageNumber=${currentPage}&pageSize=${pageSize}`);
+        console.log("la currentPage URL es: "+currentPage)
         const responseData = await response.json();
         setTodos(responseData.content);
         setTotalPages(responseData.totalPages);
@@ -40,14 +42,22 @@ function TodoList() {
 
     useEffect(() => {
         fetchTodos();
-    }, []);
+        console.log(sortColumn);
+
+    }, [sortColumn]);
     function handleSearch() {
         fetchFilterTodos();
     }
 
     function handlePageClick(pageNumber) {
+        console.log("HandlePageclick ")
+        console.log("Page number is : "+pageNumber)
+        console.log("CurrentPage is : "+currentPage)
         setCurrentPage(pageNumber);
+        fetchTodos(pageNumber); // Pasamos el valor de `pageNumber` como argumento
     }
+
+
 
     function handleSort(columnName) {
         if (columnName === sortColumn) {
@@ -55,13 +65,20 @@ function TodoList() {
         } else {
             setSortDirection('asc');
             setSortColumn(columnName);
+            console.log(sortColumn);
         }
     }
 
     function sortTodos() {
         const sortedTodos = todos.sort((a, b) => {
-            const valueA = a[sortColumn]?.toUpperCase() || '';
-            const valueB = b[sortColumn]?.toUpperCase() || '';
+            let valueA = a[sortColumn];
+            let valueB = b[sortColumn];
+
+            if (sortColumn === 'completed') {
+                valueA = valueA ? 1 : 0;
+                valueB = valueB ? 1 : 0;
+            }
+
             if (valueA < valueB) {
                 return sortDirection === 'asc' ? -1 : 1;
             }
@@ -70,8 +87,10 @@ function TodoList() {
             }
             return 0;
         });
+
         return sortedTodos;
     }
+
 
     const sortedTodos = sortTodos();
     const handleDelete = (id) => {
@@ -182,8 +201,5 @@ function TodoList() {
             </div>
         </div>
     );
-
-
 }
-
 export default TodoList;
