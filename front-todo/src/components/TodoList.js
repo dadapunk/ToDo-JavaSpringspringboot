@@ -1,9 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Link } from 'react-router-dom';
-
-import CreateTodoForm from "./CreateTodoForm";
-
+import {Link} from 'react-router-dom';
 
 function TodoList() {
     const [todos, setTodos] = useState([]);
@@ -36,7 +33,6 @@ function TodoList() {
     useEffect(() => {
         fetchTodos();
     }, []);
-
     function handleSearch() {
         fetchTodos();
     }
@@ -70,6 +66,17 @@ function TodoList() {
     }
 
     const sortedTodos = sortTodos();
+    const handleDelete = (id) => {
+        if (window.confirm('¿Está seguro de que desea eliminar este TODO? Esta operación no se puede deshacer.')) {
+            fetch(`http://localhost:8080/todos/delete/${id}`, {
+                method: 'DELETE'
+            })
+                .then(response => response.json())
+                .then(window.location.reload())
+                .catch(error => console.error(error));
+        }
+    };
+
 
     return (
         <div>
@@ -116,6 +123,8 @@ function TodoList() {
                         <td>
                             <Link to={`/edit-todo/${todo.id}`}>Edit</Link>
                         </td>
+                        <td><button onClick={() => handleDelete(todo.id)}>Eliminar</button>
+                        </td>
 
                     </tr>
                 ))}
@@ -141,7 +150,10 @@ function TodoList() {
             </div>
             <button onClick={handleSearch}>Buscar</button>
             <div className="pagination">
-                <button disabled={currentPage === 1} onClick={() => handlePageClick(currentPage - 1)}>
+                <button
+                    disabled={currentPage === 1}
+                    onClick={() => handlePageClick(currentPage - 1)}
+                >
                     Anterior
                 </button>
                 {Array.from({ length: totalPages }, (_, i) => (
@@ -162,6 +174,7 @@ function TodoList() {
             </div>
         </div>
     );
+
 
 }
 

@@ -4,6 +4,7 @@ import com.dadalab.todojavaspring.models.DTO.TodoDTO;
 import com.dadalab.todojavaspring.models.Todo;
 import com.dadalab.todojavaspring.repositories.TodoRepository;
 import com.dadalab.todojavaspring.services.TodoService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -59,8 +60,13 @@ public class TodoController {
         return todoService.updateTodo(id, todoDTO);
     }
     @DeleteMapping("/delete/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTodo(@PathVariable Long id) {
-        todoService.deleteTodo(id);
+    public ResponseEntity<String> deleteTodo(@PathVariable Long id) {
+        try {
+            todoService.deleteTodo(id);
+            return ResponseEntity.ok("TODO deleted successfully");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("TODO not found with id: " + id);
+        }
     }
+
 }

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -48,13 +49,15 @@ public class TodoService {
         return todoRepository.save(todo);
     }
 
-    public void deleteTodo(Long id) {
+    public ResponseEntity<String> deleteTodo(Long id) {
         if (todoRepository.existsById(id)) {
             todoRepository.deleteById(id);
+            return ResponseEntity.ok("TODO deleted successfully");
         } else {
             throw new EntityNotFoundException("Todo not found with id: " + id);
         }
     }
+
 
 
     public Page<Todo> getTodosByTitleAndUsername(int pageNumber, int pageSize, String title, String username) {
