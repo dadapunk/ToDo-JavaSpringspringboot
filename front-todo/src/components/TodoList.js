@@ -72,7 +72,7 @@ function TodoList() {
                 method: 'DELETE'
             })
                 .then(response => response.json())
-                .then(window.location.reload())
+                            .then(window.location.reload())
                 .catch(error => console.error(error));
         }
     };
@@ -121,7 +121,7 @@ function TodoList() {
                         <td>{todo.user.address.country}</td>
                         <td>{todo.completed ? 'Sí' : 'No'}</td>
                         <td>
-                            <Link to={`/edit-todo/${todo.id}`}>Edit</Link>
+                            <button onClick={() => window.location.href=`/edit-todo/${todo.id}`}>Editar</button>
                         </td>
                         <td><button onClick={() => handleDelete(todo.id)}>Eliminar</button>
                         </td>
