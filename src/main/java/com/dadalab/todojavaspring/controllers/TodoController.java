@@ -47,7 +47,7 @@ public class TodoController {
 
     @PostMapping("/new")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Long> saveUser(@RequestBody Todo todo) {
+    public ResponseEntity<Long> saveTodo(@RequestBody Todo todo) {
         Todo savedTodo = todoService.saveTodo(todo);
         return new ResponseEntity<>(savedTodo.getId(), HttpStatus.CREATED);
     }
