@@ -10,7 +10,7 @@ Instructions to run the project:
 #### Database
 The database name must be "Todo", and it can be either MariaDB or MySQL. If the application fails to connect to the database, please check the "application.properties" file in the Java project. The default port number for the database is 3306. The application includes some @Bean with sample data that will be loaded upon running the application.
 
-####Java SpringBoot
+#### Java SpringBoot
 Make sure you have at least Java 8 or later installed on your computer.
 Clone the project repository from GitHub.
 Open a terminal window and navigate to the project directory.
