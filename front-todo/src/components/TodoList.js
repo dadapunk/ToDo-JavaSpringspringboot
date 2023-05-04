@@ -107,11 +107,32 @@ function TodoList() {
         }
     };
 
-
     return (
         <div>
             <table className="table">
                 <thead>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                    <div style={{ marginRight: '1rem' }}>
+                        <label htmlFor="title-filter">Filtrar por título:</label>
+                        <input
+                            type="text"
+                            id="title-filter"
+                            value={titleFilter}
+                            onChange={handleTitleFilterChange}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="username-filter">Filtrar por username:</label>
+                        <input
+                            type="text"
+                            id="username-filter"
+                            value={usernameFilter}
+                            onChange={handleUsernameFilterChange}
+                        />
+                    </div>
+                    <button onClick={handleSearch}>Buscar</button>
+                </div>
+
                 <tr>
                     <th onClick={() => handleSort('title')}>
                         Título{' '}
@@ -156,42 +177,27 @@ function TodoList() {
                         <td>
                             <button onClick={() => handleDelete(todo.id)}>Eliminar</button>
                         </td>
-
                     </tr>
                 ))}
                 </tbody>
             </table>
-            <div>
-                <label htmlFor="title-filter">Filtrar por título:</label>
-                <input
-                    type="text"
-                    id="title-filter"
-                    value={titleFilter}
-                    onChange={handleTitleFilterChange}
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <ReactPaginate
+                    previousLabel={'Anterior'}
+                    nextLabel={'Siguiente'}
+                    breakLabel={'...'}
+                    pageCount={totalPages}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={5}
+                    onPageChange={(data) => handlePageClick(data.selected)}
+                    containerClassName={'pagination'}
+                    pageClassName={'page-item'}
+                    pageLinkClassName={'page-link'}
+                    previousClassName={'page-item'}
+                    previousLinkClassName={'page-link'}
+                    nextClassName={'page-link'}
                 />
             </div>
-            <div>
-                <label htmlFor="username-filter">Filtrar por username:</label>
-                <input
-                    type="text"
-                    id="username-filter"
-                    value={usernameFilter}
-                    onChange={handleUsernameFilterChange}
-                />
-            </div>
-            <button onClick={handleSearch}>Buscar</button>
-            <ReactPaginate
-                previousLabel={'Anterior'}
-                nextLabel={'Siguiente'}
-                breakLabel={'...'}
-                pageCount={totalPages}
-                marginPagesDisplayed={2}
-                pageRangeDisplayed={5}
-                onPageChange={(data) => handlePageClick(data.selected)}
-
-
-            />
-
         </div>
     );
 }
