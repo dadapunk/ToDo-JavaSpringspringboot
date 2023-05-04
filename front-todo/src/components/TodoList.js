@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import ReactPaginate from 'react-paginate';
+
 
 function TodoList() {
     const [todos, setTodos] = useState([]);
@@ -22,40 +24,39 @@ function TodoList() {
 
 
     async function fetchTodos() {
-
-        const response = await fetch(`http://localhost:8080/todos/all?pageNumber=${currentPage}&pageSize=${pageSize}`);
-        console.log("la currentPage URL es: "+currentPage)
+        console.log("calling fetch todo");
+        console.log("currentPage is : "+currentPage);
+        const response = await fetch(`http://localhost:8080/todos/all?pageNumber=${currentPage}&size=${pageSize}&title=${titleFilter}&username=${usernameFilter}`);
         const responseData = await response.json();
         setTodos(responseData.content);
         setTotalPages(responseData.totalPages);
-        setCurrentPage(responseData.number);
         setIsLoading(false);
     }
+
     async function fetchFilterTodos() {
-        const response = await fetch(`http://localhost:8080/todos/filters?pageNumber=${currentPage}&pageSize=${pageSize}&title=${titleFilter}&username=${usernameFilter}`);
+        const response = await fetch(`http://localhost:8080/todos/filters?pageNumber=${currentPage}&size=${pageSize}&title=${titleFilter}&username=${usernameFilter}`);
         const responseData = await response.json();
         setTodos(responseData.content);
         setTotalPages(responseData.totalPages);
-        setCurrentPage(responseData.number);
         setIsLoading(false);
     }
 
     useEffect(() => {
         fetchTodos();
-        console.log(sortColumn);
+    }, [sortColumn, currentPage]);
 
-    }, [sortColumn]);
     function handleSearch() {
         fetchFilterTodos();
     }
 
-    function handlePageClick(pageNumber) {
-        console.log("HandlePageclick ")
-        console.log("Page number is : "+pageNumber)
-        console.log("CurrentPage is : "+currentPage)
-        setCurrentPage(pageNumber);
-        fetchTodos(pageNumber); // Pasamos el valor de `pageNumber` como argumento
+    function handlePageClick(data) {
+        setCurrentPage(parseInt(data));
     }
+
+    useEffect(() => {
+        fetchTodos();
+    }, [sortColumn, currentPage]);
+
 
 
 
@@ -65,12 +66,15 @@ function TodoList() {
         } else {
             setSortDirection('asc');
             setSortColumn(columnName);
-            console.log(sortColumn);
         }
     }
 
     function sortTodos() {
-        const sortedTodos = todos.sort((a, b) => {
+        if (!todos) {
+            return [];
+        }
+
+        const sortedTodos = [...todos].sort((a, b) => {
             let valueA = a[sortColumn];
             let valueB = b[sortColumn];
 
@@ -91,7 +95,6 @@ function TodoList() {
         return sortedTodos;
     }
 
-
     const sortedTodos = sortTodos();
     const handleDelete = (id) => {
         if (window.confirm('¿Está seguro de que desea eliminar este TODO? Esta operación no se puede deshacer.')) {
@@ -99,7 +102,7 @@ function TodoList() {
                 method: 'DELETE'
             })
                 .then(response => response.json())
-                            .then(window.location.reload())
+                .then(window.location.reload())
                 .catch(error => console.error(error));
         }
     };
@@ -148,9 +151,10 @@ function TodoList() {
                         <td>{todo.user.address.country}</td>
                         <td>{todo.completed ? 'Sí' : 'No'}</td>
                         <td>
-                            <button onClick={() => window.location.href=`/edit-todo/${todo.id}`}>Editar</button>
+                            <button onClick={() => window.location.href = `/edit-todo/${todo.id}`}>Editar</button>
                         </td>
-                        <td><button onClick={() => handleDelete(todo.id)}>Eliminar</button>
+                        <td>
+                            <button onClick={() => handleDelete(todo.id)}>Eliminar</button>
                         </td>
 
                     </tr>
@@ -176,30 +180,20 @@ function TodoList() {
                 />
             </div>
             <button onClick={handleSearch}>Buscar</button>
-            <div className="pagination">
-                <button
-                    disabled={currentPage === 1}
-                    onClick={() => handlePageClick(currentPage - 1)}
-                >
-                    Anterior
-                </button>
-                {Array.from({ length: totalPages }, (_, i) => (
-                    <button
-                        key={i + 1}
-                        className={currentPage === i + 1 ? 'active' : ''}
-                        onClick={() => handlePageClick(i + 1)}
-                    >
-                        {i + 1}
-                    </button>
-                ))}
-                <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => handlePageClick(currentPage + 1)}
-                >
-                    Siguiente
-                </button>
-            </div>
+            <ReactPaginate
+                previousLabel={'Anterior'}
+                nextLabel={'Siguiente'}
+                breakLabel={'...'}
+                pageCount={totalPages}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={5}
+                onPageChange={(data) => handlePageClick(data.selected)}
+
+
+            />
+
         </div>
     );
 }
+
 export default TodoList;

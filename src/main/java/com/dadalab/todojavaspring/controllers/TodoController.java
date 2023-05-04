@@ -21,6 +21,11 @@ public class TodoController {
     @Autowired
     private TodoService todoService;
 
+    @GetMapping("/alles")
+    public List<Todo> getAllTodos()
+    {
+        return todoRepository.findAll();
+    }
     @GetMapping("/all")
     public Page<Todo> getAllTodos(@RequestParam(defaultValue = "0") int pageNumber,
                                   @RequestParam(defaultValue = "10") int pageSize)

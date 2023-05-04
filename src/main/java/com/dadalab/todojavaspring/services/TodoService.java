@@ -21,6 +21,11 @@ import java.util.Optional;
 public class TodoService {
     @Autowired
     TodoRepository todoRepository;
+    public List<Todo> getAllTodos2() {
+        //Pageable paging = PageRequest.of(pageNumber, pageSize);
+
+        return todoRepository.findAll();
+    }
     public Page<Todo> getAllTodos(int pageNumber, int pageSize) {
         Pageable paging = PageRequest.of(pageNumber, pageSize);
 
