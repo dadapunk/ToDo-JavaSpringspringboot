@@ -70,14 +70,16 @@ public class TodoController {
     public Todo updateTodo(@PathVariable Long id, @RequestBody TodoDTO todoDTO) {
         return todoService.updateTodo(id, todoDTO);
     }
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteTodo(@PathVariable Long id) {
-        try {
-            todoService.deleteTodo(id);
-            return ResponseEntity.ok("TODO deleted successfully");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("TODO not found with id: " + id);
-        }
+ @DeleteMapping("/delete/{id}")
+public ResponseEntity<Object> deleteTodo(@PathVariable Long id) {
+    try {
+        todoService.deleteTodo(id);
+        return ResponseEntity.ok().body("{\"success\": true, \"message\": \"TODO deleted successfully\"}");
+    } catch (EntityNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"success\": false, \"message\": \"TODO not found with id: " + id + "\"}");
     }
+}
+
+
 
 }

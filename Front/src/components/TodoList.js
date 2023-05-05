@@ -3,6 +3,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import ReactPaginate from 'react-paginate';
 import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
+import { Redirect } from 'react-router-dom';
+import { useHistory, useParams } from "react-router-dom";
+
 
 
 function TodoList() {
@@ -16,6 +19,10 @@ function TodoList() {
     const [sortDirection, setSortDirection] = useState('asc');
     const [sortColumn, setSortColumn] = useState('title');
     const { isAuthenticated } = useAuth0();
+    const [shouldRedirect, setShouldRedirect] = useState(false);
+    const history = useHistory();
+
+
 
 
     function handleTitleFilterChange(event) {
@@ -100,16 +107,36 @@ function TodoList() {
     }
 
     const sortedTodos = sortTodos();
-    const handleDelete = (id) => {
-        if (window.confirm('¿Está seguro de que desea eliminar este TODO? Esta operación no se puede deshacer.')) {
-            fetch(`http://localhost:8080/todos/delete/${id}`, {
-                method: 'DELETE'
-            })
-                .then(response => response.json())
-                .then(window.location.reload())
-                .catch(error => console.error(error));
+
+const handleDelete = (id) => {
+  if (window.confirm('¿Está seguro de que desea eliminar este TODO? Esta operación no se puede deshacer.')) {
+    fetch(`http://localhost:8080/todos/delete/${id}`, {
+      method: 'DELETE'
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al eliminar el TODO');
         }
-    };
+        return response.json();
+      })
+      .then(() => {
+        // Actualizar la lista de TODOs manualmente
+        const updatedTodos = todos.filter(todo => todo.id !== id);
+        setTodos(updatedTodos);
+
+        // Navegar a la página de lista de TODOs
+        history.push("/list-todo");
+      })
+      .catch(error => console.error(error));
+  }
+};
+
+      
+      
+      
+      if (shouldRedirect) {
+        return <Redirect to="/list-todo" />;
+      }  
 
     if (!isAuthenticated) {
         return <div>Please log in to access this page.</div>;

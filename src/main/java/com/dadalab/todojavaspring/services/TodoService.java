@@ -56,14 +56,14 @@ public class TodoService {
         return todoRepository.save(todo);
     }
 
-    public ResponseEntity<String> deleteTodo(Long id) {
-        if (todoRepository.existsById(id)) {
-            todoRepository.deleteById(id);
-            return ResponseEntity.ok("TODO deleted successfully");
-        } else {
-            throw new EntityNotFoundException("Todo not found with id: " + id);
-        }
+    public void deleteTodo(Long id) {
+    if (todoRepository.existsById(id)) {
+        todoRepository.deleteById(id);
+    } else {
+        throw new EntityNotFoundException("Todo not found with id: " + id);
     }
+}
+
 
 
 
