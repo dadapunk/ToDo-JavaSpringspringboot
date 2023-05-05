@@ -5,6 +5,16 @@ target/
 !**/src/test/**/target/
 OMC.pdf
 
+### React ###
+
+/Front/node_modules
+/Front/build
+.env
+*.log
+*.swp
+.DS_Store
+
+
 ### STS ###
 .apt_generated
 .classpath
