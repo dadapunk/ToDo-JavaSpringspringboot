@@ -1,4 +1,6 @@
 # ToDo-JavaSpringspringboot
+
+![Example](movie.gif)
  
 This project is a web application for managing user's to-do lists. It allows users to create, read, update, and delete to-do items. The application is built using Spring Boot, Spring Data JPA, and a relational database. It includes features such as pagination, filtering, sorting, and security.
 
